@@ -129,36 +129,3 @@ def evaluate_board(self):
         # Define your reward calculation logic here
         reward = [...]  # Calculate reward based on the state, action, and next state
         self.rewards.append(reward)
-
-def main():
-    game = board()
-    game.display_board()
-
-    while not game.is_game_over():
-        legal_moves = game.get_legal_moves()
-        if legal_moves:
-            print("Player", game.current_player, "'s move:")
-            print("Legal Moves:", legal_moves)
-            # Implement the move selection logic here
-            selected_move = legal_moves[0]  # For now, just select the first legal move
-            game.make_move(selected_move)
-            game.display_board()
-            # Extract features and calculate reward for the current state-action pair
-            game.extract_features(game.board, selected_move)
-            game.calculate_reward(game.board, selected_move, game.board)  # Assuming no change in state for now
-        else:
-            print("No legal moves for Player", game.current_player)
-            break
-
-    # Determine the winner
-    if game.current_player == 1:
-        winner = "Player 2"
-    elif game.current_player == 2:
-        winner = "Player 1"
-    else:
-        winner = "No one"
-
-    print("Game over. Winner:", winner)
-
-if __name__ == "__main__":
-    main()
