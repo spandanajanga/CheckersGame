@@ -1,45 +1,93 @@
 import math
 import copy
 
+EMPTY=0
+WHITE=1
+BLACK=2
+
 class Board:
     def __init__(self):
-        self.board = Board()
-        self.current_player = 1
-        self.B_left = self.w_left = 12  #B= black and W= white
-        self.B_kings = self.w_kings = 0
-        self.features = []
-        self.rewards = []
+    self.board = [[EMPTY] * 8 for _ in range(8)]
+    self.init_board()
 
-    def get_piece(self, row, col):
-        return self.board[row][col]
+def init_board(self):
+    for row in range(8):
+        for col in range(8):
+            if (row + col) % 2 != 0:
+                if row < 3:
+                    self.board[row][col] = BLACK
+                elif row > 4:
+                    self.board[row][col] = WHITE
 
+def display_board(self):
+    print("   0 1 2 3 4 5 6 7")
+    for i, row in enumerate(self.board):
+        print(i, end="  ")
+        for j, col in enumerate(row):
+            if col == EMPTY:
+                print("-", end=" ")
+            elif col == WHITE:
+                print("W", end=" ")
+            elif col == BLACK:
+                print("B", end=" ")
+        print()
 
-    def create_board(self, rows, cols, piece):
-        for row in range(rows):
-            self.board.append([])
-            for col in range(cols):
-                if col % 2 == ((row +  1) % 2):
-                    if row < 3:
-                        self.board[row].append(piece(row, col, W))
-                    elif row > 4:
-                        self.board[row].append(piece(row, col, B))
-                    else:
-                        self.board[row].append(0)
-                else:
-                    self.board[row].append(0)
+def get_legal_moves(self, player):
+    moves = []
+    for row in range(8):
+        for col in range(8):
+            if self.board[row][col] == player:
+                moves.extend(self.get_piece_moves(row, col))
+    return moves
 
-    def display_board(self):
-        self.board.print_board()
+def get_piece_moves(self, row, col):
+    piece_moves = []
+    if self.board[row][col] == WHITE:
+        directions = [UP_LEFT, UP_RIGHT]
+    elif self.board[row][col] == BLACK:
+        directions = [DOWN_LEFT, DOWN_RIGHT]
+    else:
+        return piece_moves
 
-    def get_legal_moves(self):
-        return self.board.get_possible_next_moves()
+    for direction in directions:
+        new_row = row + direction[0]
+        new_col = col + direction[1]
+        if self.is_valid_square(new_row, new_col) and self.board[new_row][new_col] == EMPTY:
+            piece_moves.append(((row, col), (new_row, new_col)))
+        elif self.is_valid_square(new_row, new_col) and self.board[new_row][new_col] != self.board[row][col]:
+            jump_row = new_row + direction[0]
+            jump_col = new_col + direction[1]
+            if self.is_valid_square(jump_row, jump_col) and self.board[jump_row][jump_col] == EMPTY:
+                piece_moves.append(((row, col), (jump_row, jump_col)))
+    return piece_moves
 
-    def make_move(self, move):
-        self.board.make_move(move)
-        self.current_player = 1 if self.current_player == 2 else 2
+def is_valid_square(self, row, col):
+    return 0 <= row < 8 and 0 <= col < 8
+
+def make_move(self, move):
+    start, end = move
+    start_row, start_col = start
+    end_row, end_col = end
+    self.board[end_row][end_col] = self.board[start_row][start_col]
+    self.board[start_row][start_col] = EMPTY
+    if abs(start_row - end_row) == 2:
+        jumped_row = (start_row + end_row) // 2
+        jumped_col = (start_col + end_col) // 2
+        self.board[jumped_row][jumped_col] = EMPTY
+
+def evaluate_board(self):
+    white_count = 0
+    black_count = 0
+    for row in range(8):
+        for col in range(8):
+            if self.board[row][col] == WHITE:
+                white_count += 1
+            elif self.board[row][col] == BLACK:
+                black_count += 1
+    return white_count - black_count
 
     def is_game_over(self):
-        return self.board.is_game_over()
+    return not self.get_legal_moves(WHITE) or not self.get_legal_moves(BLACK)
     
     def not_spot(self, loc):
         if len(loc) == 0 or loc[0] < 0 or loc[0] > self.HEIGHT - 1 or loc[1] < 0 or loc[1] > self.WIDTH - 1:
