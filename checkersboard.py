@@ -1,3 +1,4 @@
+
 import math
 import copy
 
@@ -121,11 +122,53 @@ def evaluate_board(self):
         return answer
 
     def extract_features(self, state, action):
-        # Define your feature extraction logic here
-        features = [...]  # Extract features from the state and action
+        next_state = state.generate_successor(action, False)
+        agent_ind = 0 if state.is_first_agent_turn() else 1
+        oppn_ind = 1 if state.is_first_agent_turn() else 0
+        num_pieces_list = state.get_pieces_and_kings()
+        agent_pawns = num_pieces_list[agent_ind]
+        agent_kings = num_pieces_list[agent_ind + 2]
+        agent_pieces = agent_pawns + agent_kings
+        oppn_pawns = num_pieces_list[oppn_ind]
+        oppn_kings = num_pieces_list[oppn_ind + 2]
+        oppn_pieces = oppn_pawns + oppn_kings
+        num_pieces_list_n = next_state.get_pieces_and_kings()
+        agent_pawns_n = num_pieces_list_n[agent_ind]
+        agent_kings_n = num_pieces_list_n[agent_ind + 2]
+        agent_pieces_n = agent_pawns_n + agent_kings_n
+        oppn_pawns_n = num_pieces_list_n[oppn_ind]
+        oppn_kings_n = num_pieces_list_n[oppn_ind + 2]
+        oppn_pieces_n = oppn_pawns_n + oppn_kings_n
+        features = []
         self.features.append(features)
+        return features
 
     def calculate_reward(self, state, action, next_state):
-        # Define your reward calculation logic here
-        reward = [...]  # Calculate reward based on the state, action, and next state
+        if next_state.is_game_over():
+        if state.is_first_agent_turn():
+            return WIN_REWARD if next_state.is_first_agent_win() else LOSE_REWARD
+        else:
+            return WIN_REWARD if next_state.is_second_agent_win() else LOSE_REWARD
+        agent_ind = 0 if state.is_first_agent_turn() else 1
+        oppn_ind = 1 if state.is_first_agent_turn() else 0
+        num_pieces_list = state.get_pieces_and_kings()
+        agent_pawns = num_pieces_list[agent_ind]
+        agent_kings = num_pieces_list[agent_ind + 2]
+        oppn_pawns = num_pieces_list[oppn_ind]
+        oppn_kings = num_pieces_list[oppn_ind + 2]
+        num_pieces_list_n = next_state.get_pieces_and_kings()
+        agent_pawns_n = num_pieces_list_n[agent_ind]
+        agent_kings_n = num_pieces_list_n[agent_ind + 2]
+        oppn_pawns_n = num_pieces_list_n[oppn_ind]
+        oppn_kings_n = num_pieces_list_n[oppn_ind + 2]
+        r_1 = agent_pawns - agent_pawns_n
+        r_2 = agent_kings - agent_kings_n
+        r_3 = oppn_pawns - oppn_pawns_n
+        r_4 = oppn_kings - oppn_kings_n
+        reward = r_3 * 0.2 + r_4 * 0.3 + r_1 * (-0.4) + r_2 * (-0.5)
+        if reward == 0:
+            reward = LIVING_REWARD
+        reward = []  
         self.rewards.append(reward)
+        return rewards
+
